@@ -4,14 +4,37 @@ import { Inter } from "@next/font/google";
 import styles from "../styles/Home.module.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button } from "react-bootstrap";
-import React from "react";
+import React, { useRef } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const nameRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const messageRef = useRef<HTMLTextAreaElement>(null);
+
+  let data = {
+    name: nameRef.current?.value,
+    email: emailRef.current?.value,
+    message: messageRef.current?.value,
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("メール送信");
+    // console.log(nameRef.current?.value);
+    // console.log(emailRef.current?.value);
+    // console.log(messageRef.current?.value);
+    await fetch("api/contact", {
+      method: "POST",
+      headers: {
+        Accept: "application/json, text/plain",
+        "Content-Type": "application/json",
+      },
+      // オブジェクトとして渡すとエラーになるのでjson化
+      body: JSON.stringify(data),
+    }).then((res) => {
+      if (res.status === 200) console.log("メール送信完了");
+    });
   };
 
   return (
@@ -31,13 +54,25 @@ export default function Home() {
             <label htmlFor="Name" className="form-label">
               Name
             </label>
-            <input type="text" className="form-control" id="name" required />
+            <input
+              type="text"
+              className="form-control"
+              id="name"
+              required
+              ref={nameRef}
+            />
           </div>
           <div className="mb-3">
             <label htmlFor="Email" className="form-label">
               Email
             </label>
-            <input type="text" className="form-control" id="email" required />
+            <input
+              type="text"
+              className="form-control"
+              id="email"
+              required
+              ref={emailRef}
+            />
           </div>
           <div className="mb-3">
             <label htmlFor="Name" className="form-label">
@@ -46,7 +81,8 @@ export default function Home() {
             <textarea
               name="message"
               className="form-control"
-              id="message"></textarea>
+              id="message"
+              ref={messageRef}></textarea>
           </div>
           <button type="submit" className="btn btn-danger">
             送信
