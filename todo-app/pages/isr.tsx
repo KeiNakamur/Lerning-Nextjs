@@ -2,13 +2,14 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 // Nextのページコンポーネントのデータ型↓
 import { NextPage } from "next";
-import { GetServerSideProps } from "next";
+import { GetStaticProps } from "next";
 import { Layout } from "../components/Layout";
 import { supabase } from "../utils/supabase";
 import { Task, Notice } from "../types/types";
 
-export const getServerSideProps: GetServerSideProps = async () => {
-  console.log("getServerSideProps/ssr invoked");
+// (SSGと記述が基本的には同じ)
+export const getStaticProps: GetStaticProps = async () => {
+  console.log("isr invoked");
   const { data: tasks } = await supabase
     .from("todos")
     .select("*")
@@ -17,19 +18,21 @@ export const getServerSideProps: GetServerSideProps = async () => {
     .from("notices")
     .select("*")
     .order("created_at", { ascending: true });
-
-  return { props: { tasks, notices } };
+  // ISRの場合はpropsにrevalidateを追加する必要がある
+  return { props: { tasks, notices }, revalidate: 5 };
 };
+
 type StaticProps = {
   tasks: Task[];
   notices: Notice[];
 };
 
-const Ssr: NextPage<StaticProps> = ({ tasks, notices }) => {
+// ISR(SSGしたページを任意の秒数で再生する機能)
+const Isr: NextPage<StaticProps> = ({ tasks, notices }) => {
   const router = useRouter();
   return (
-    <Layout title="SSR">
-      <p className="mb-3 text-pink-500">SSR</p>
+    <Layout title="ISR">
+      <p className="mb-3 text-indigo-500">ISR</p>
       <ul className="mb-3">
         {tasks.map((task) => {
           return (
@@ -48,23 +51,14 @@ const Ssr: NextPage<StaticProps> = ({ tasks, notices }) => {
           );
         })}
       </ul>
-      {/* https://www.udemy.com/course/nextjs-supabase-web-tailwindcss/learn/lecture/31686332#notes
-          ↑prefetchについて
-      */}
-      <Link href="/ssg" prefetch={false}>
-        <p className="my-3 text-xs">Link to ssg</p>
+      <Link href="/ssr" prefetch={false}>
+        <p className="my-3 text-xs">Link to ssr</p>
       </Link>
-      <Link href="/isr" prefetch={false}>
-        <p className="mb-3 text-xs">Link to isr</p>
-      </Link>
-      <button className="mb-3 text-xs" onClick={() => router.push("/ssg")}>
-        Route to ssg
-      </button>
-      <button className="mb-3 text-xs" onClick={() => router.push("/isr")}>
-        Route to isr
-      </button>
+      <button
+        className="mb-3 text-xs"
+        onClick={() => router.push("/ssr")}></button>
     </Layout>
   );
 };
 
-export default Ssr;
+export default Isr;
