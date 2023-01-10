@@ -62,6 +62,7 @@ const Ssr: NextPage<StaticProps> = ({ tasks, notices }) => {
       </button>
       <button className="mb-3 text-xs" onClick={() => router.push("/isr")}>
         Route to isr
+        test
       </button>
     </Layout>
   );
