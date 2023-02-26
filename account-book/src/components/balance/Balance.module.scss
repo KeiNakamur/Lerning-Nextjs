@@ -1,0 +1,26 @@
+.wrapper {
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  border: 1px solid #000;
+  width: auto;
+  margin: 20px;
+
+  .leftContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid #000;
+    background-color: rgba(6, 179, 61, 0.941);
+    color: #fff;
+    font-size: 18px;
+    font-weight: 450;
+    padding: 1%;
+  }
+  .rightContainer {
+    width: auto;
+    font-size: 18px;
+    font-weight: 450;
+    padding: 0 3%;
+  }
+}
